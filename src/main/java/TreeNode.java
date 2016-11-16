@@ -37,8 +37,8 @@ public class TreeNode {
     }
 
     static public String getLabel(List<String> data, TreeNode thisNode){
-        if(thisNode.label != null){
-            return thisNode.label;
+        if(thisNode.getLabel() != null){
+            return thisNode.getLabel();
         }
         String header = thisNode.getSignature();
         Integer index = FileUtils.header2IndexMap.get(header);
