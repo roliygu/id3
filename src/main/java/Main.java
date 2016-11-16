@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class Main {
 
+    static final String labelHeader = "好瓜";
+
     public static void main(String[] args) throws Exception {
 
         List<List<String>> transData = FileUtils.readTrainData();
@@ -24,8 +26,18 @@ public class Main {
         return new TreeNode();
     }
 
+    static Double calculteGain(List<List<String>> data, String header){
+        double hd = calculateExperienceEntropy(data);
+        double chd = calculateConditionalEntropy(data, header);
+        return hd - chd;
+    }
+
     static Double calculateExperienceEntropy(List<List<String>> data){
-        Map<String, Double> entropyMap = calculateEntropyMap(data, "好瓜");
+        return calculateEntropy(data, labelHeader);
+    }
+
+    static Double calculateEntropy(List<List<String>> data, String header){
+        Map<String, Double> entropyMap = calculateEntropyMap(data, header);
         double sum = 0.0f;
         for(Double entropy: entropyMap.values()){
             sum += entropy;
@@ -33,10 +45,17 @@ public class Main {
         return -sum;
     }
 
-//    static Double calculateConditionalEntropy(List<List<String>> data, String header){
-//        Map<String, List<List<String>>> labelDataMap = groupByLabelValue(data);
-//
-//    }
+    static Double calculateConditionalEntropy(List<List<String>> data, String header){
+        Map<String, List<List<String>>> groupDataMap = groupByHeader(data, header);
+        double sum = 0.0f;
+        for(Map.Entry<String, List<List<String>>> groupDataEntry: groupDataMap.entrySet()){
+            List<List<String>> groupData = groupDataEntry.getValue();
+            Double _entropy = calculateEntropy(groupData, labelHeader);
+            Double probability = groupData.size()*1.0 / FileUtils.totalDataNumber;
+            sum += probability * _entropy;
+        }
+        return sum;
+    }
 
     static private Map<String,Double> calculateEntropyMap(List<List<String>> data, String header){
         Map<String, Integer> countMap = groupAndCount(data, header);
@@ -63,8 +82,8 @@ public class Main {
         return res;
     }
 
-    static Map<String, List<List<String>>> groupByLabelValue(List<List<String>> data){
-        Integer index = FileUtils.header2IndexMap.get("好瓜");
+    static Map<String, List<List<String>>> groupByHeader(List<List<String>> data, String header){
+        Integer index = FileUtils.header2IndexMap.get(header);
         Map<String, List<List<String>>> res = new HashMap<>();
         for(List<String> row: data){
             String labelValue = row.get(index);
@@ -77,6 +96,10 @@ public class Main {
             }
         }
         return res;
+    }
+
+    static Map<String, List<List<String>>> groupByLabelValue(List<List<String>> data){
+        return groupByHeader(data, labelHeader);
     }
 
 }
