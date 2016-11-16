@@ -13,6 +13,7 @@ public class FileUtils {
     static Map<String, List<String>> header2Field = new HashMap<>();
     static Map<String, Integer> header2IndexMap = new HashMap<>();
     static Map<Integer, String> header2StrMap = new HashMap<>();
+    static Set<String> featureSet;
 
     static private BufferedReader buildBufferedReader(String path) throws IOException {
         return new BufferedReader(new InputStreamReader(new FileInputStream(path)));
@@ -31,6 +32,7 @@ public class FileUtils {
                         header2StrMap.put(i, slices[i]);
                     }
                     first = false;
+                    featureSet = header2IndexMap.keySet();
                     continue;
                 }
                 String[] newSlices = discrete(slices);
