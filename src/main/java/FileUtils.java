@@ -14,6 +14,7 @@ public class FileUtils {
     static Map<String, Integer> header2IndexMap = new HashMap<>();
     static Map<Integer, String> header2StrMap = new HashMap<>();
     static Set<String> featureSet;
+    static Integer totalDataNumber = 0;
 
     static private BufferedReader buildBufferedReader(String path) throws IOException {
         return new BufferedReader(new InputStreamReader(new FileInputStream(path)));
@@ -38,6 +39,7 @@ public class FileUtils {
                 String[] newSlices = discrete(slices);
                 updateField(newSlices);
                 data.add(Arrays.asList(newSlices));
+                totalDataNumber += 1;
             }
             return data;
         }
