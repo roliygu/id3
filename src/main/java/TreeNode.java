@@ -10,7 +10,7 @@ public class TreeNode {
     // signature告知了当前节点判断的依据,比如"色泽"or"根蒂"等
     private String signature = null;
     // children的key其实是signature对应数据的值域,比如"青绿"or"乌黑"等,而value则是真正的子节点
-    private Map<String, TreeNode> children = new HashMap<>();
+    private Map<String, TreeNode> children = null;
 
     public String getLabel() {
         return label;
