@@ -4,13 +4,22 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        test();
+
+        List<List<String>> transData = FileUtils.readTrainData();
+
+        // build tree
+        TreeNode root = buildTree();
+
+        List<List<String>> testData = FileUtils.readTestData();
+        for(List<String> data: testData){
+            String label = TreeNode.getLabel(data, root);
+            System.out.println(String.format("label is %s", label));
+        }
+
     }
 
-    public static void test() throws IOException {
-
-        List<List<String>> data = FileUtils.readTestData();
-        System.out.println(data);
-
+    static TreeNode buildTree(){
+        return new TreeNode();
     }
+
 }
