@@ -43,6 +43,9 @@ public class TreeNode {
         String header = thisNode.getSignature();
         Integer index = FileUtils.header2IndexMap.get(header);
         String dataValue = data.get(index);
+        if(thisNode.getChildren()==null){
+            throw new IllegalArgumentException("当前决策树无法判断该数据");
+        }
         TreeNode child = thisNode.getChildren().get(dataValue);
         if(child == null){
             throw new IllegalArgumentException("当前决策树无法判断该数据");
