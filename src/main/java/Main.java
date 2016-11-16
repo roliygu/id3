@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,8 @@ public class Main {
         return new TreeNode();
     }
 
-    static Double calculateEntropy(Map<String, Double> entropyMap){
+    static Double calculateExperienceEntropy(List<List<String>> data){
+        Map<String, Double> entropyMap = calculateEntropyMap(data, "好瓜");
         double sum = 0.0f;
         for(Double entropy: entropyMap.values()){
             sum += entropy;
@@ -31,7 +33,12 @@ public class Main {
         return -sum;
     }
 
-    static Map<String,Double> calculateEntropyMap(List<List<String>> data, String header){
+//    static Double calculateConditionalEntropy(List<List<String>> data, String header){
+//        Map<String, List<List<String>>> labelDataMap = groupByLabelValue(data);
+//
+//    }
+
+    static private Map<String,Double> calculateEntropyMap(List<List<String>> data, String header){
         Map<String, Integer> countMap = groupAndCount(data, header);
         Map<String, Double> entropyMap = new HashMap<>();
         for(Map.Entry<String, Integer> entry: countMap.entrySet()){
@@ -51,6 +58,22 @@ public class Main {
                 res.put(thisValue, 1);
             }else{
                 res.put(thisValue, res.get(thisValue) + 1);
+            }
+        }
+        return res;
+    }
+
+    static Map<String, List<List<String>>> groupByLabelValue(List<List<String>> data){
+        Integer index = FileUtils.header2IndexMap.get("好瓜");
+        Map<String, List<List<String>>> res = new HashMap<>();
+        for(List<String> row: data){
+            String labelValue = row.get(index);
+            if(!res.keySet().contains(labelValue)){
+                List<List<String>> _data = new ArrayList<>();
+                _data.add(row);
+                res.put(labelValue, _data);
+            }else{
+                res.get(labelValue).add(row);
             }
         }
         return res;
