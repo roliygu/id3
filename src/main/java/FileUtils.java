@@ -33,7 +33,7 @@ public class FileUtils {
                         header2StrMap.put(i, slices[i]);
                     }
                     first = false;
-                    featureSet = header2IndexMap.keySet();
+                    featureSet = copyFeatureSet(header2IndexMap.keySet());
                     continue;
                 }
                 String[] newSlices = discrete(slices);
@@ -84,7 +84,21 @@ public class FileUtils {
 
     // 进行离散化
     static private String[] discrete(String[] slices){
+        Double sugar = Double.valueOf(slices[7]);
+        Double density = Double.valueOf(slices[6]);
+        String sugarStr = (sugar<0.2)?"低":"高";
+        String densityStr = (density<0.5)?"低":"高";
+        slices[6] = densityStr;
+        slices[7] = sugarStr;
         return slices;
+    }
+
+    static private Set<String> copyFeatureSet(Set<String> o){
+        Set<String> res = new HashSet<>();
+        for(String s:o){
+            res.add(s);
+        }
+        return res;
     }
 
 }

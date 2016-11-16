@@ -1,7 +1,6 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
+import java.util.*;
 
 public class Main {
 
@@ -12,7 +11,7 @@ public class Main {
         List<List<String>> transData = FileUtils.readTrainData();
 
         // build tree
-        TreeNode root = buildTree();
+        TreeNode root = buildTree(transData, FileUtils.featureSet);
 
         List<List<String>> testData = FileUtils.readTestData();
         for(List<String> data: testData){
@@ -22,11 +21,59 @@ public class Main {
 
     }
 
-    static TreeNode buildTree(){
-        return new TreeNode();
+    static Boolean isPure(List<List<String>> data){
+        Integer index = FileUtils.header2IndexMap.get(labelHeader);
+        String firstValue = data.get(0).get(index);
+        for(int i=1;i!=data.size();i++){
+            String rowValue = data.get(i).get(index);
+            if(!rowValue.equals(firstValue)){
+                return false;
+            }
+        }
+        return true;
     }
 
-    static Double calculteGain(List<List<String>> data, String header){
+    static TreeNode buildTree(List<List<String>> data, Set<String> featureSet){
+
+        Integer index = FileUtils.header2IndexMap.get(labelHeader);
+
+        if(isPure(data)){
+            // 剩下的node label都是一样的,取其label即可
+            TreeNode node = new TreeNode();
+            node.setLabel(data.get(0).get(index));
+            return node;
+        }
+
+        // 剩下的node不纯的话,则取增益最大的节点,递归构造下层节点
+
+        String maxGainFeature = null;
+        Double maxGain = Double.MIN_VALUE;
+        for(String feature: featureSet){
+            Double gain = calculateGain(data, feature);
+            if(gain>maxGain){
+                maxGain = gain;
+                maxGainFeature = feature;
+            }
+        }
+
+        TreeNode node = new TreeNode();
+        node.setSignature(maxGainFeature);
+        Map<String,List<List<String>>> groupedDate = groupByHeader(data, maxGainFeature);
+        Map<String, TreeNode> children = new HashMap<>();
+        featureSet.remove(maxGainFeature);
+        for(Map.Entry<String, List<List<String>>> entry: groupedDate.entrySet()){
+            TreeNode child = buildTree(entry.getValue(), featureSet);
+            children.put(entry.getKey(), child);
+        }
+        featureSet.add(maxGainFeature);
+        node.setChildren(children);
+        return node;
+    }
+
+    static Double calculateGain(List<List<String>> data, String header){
+        if(header.equals(labelHeader)){
+            return Double.MIN_VALUE;
+        }
         double hd = calculateExperienceEntropy(data);
         double chd = calculateConditionalEntropy(data, header);
         return hd - chd;
